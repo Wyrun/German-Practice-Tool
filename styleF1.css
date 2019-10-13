@@ -1,0 +1,12 @@
+@font-face {
+font-family: "MuseoSansRounded";
+src: url("Museo Sans Rounded/MuseoSansRounded-500.otf") format("opentype");
+}
+
+body{
+  background-color: #222;
+  padding: 40px;
+  color: white;
+  font-family: 'MuseoSansRounded', 'Roboto', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-size: 20px;
+}
