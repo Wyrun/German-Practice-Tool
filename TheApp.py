@@ -12,8 +12,8 @@ nextSent = "„!?.\":"
 
 currentHipperDict = ''
 alreadyUsed = 0
-AIm = 3000
-BIm = 5000
+AIm = 300
+BIm = 600
 
 #s = analyzer.analyze("dass")
 #s = analyzer.analyze("Dass")
@@ -152,8 +152,8 @@ class MText:
             self.words[i].analyze_word()
         i = 0
         while(i < len(self.words)):
-            if(i % 100 == 0):
-                print(i)
+            if(i % 400 == 0):
+                print("loading...")
             j = i + 1
             breaking = False
             while(j < len(self.words)):
@@ -180,7 +180,7 @@ class MText:
         for wall in range(len(self.words) - 1):
             #print(wall, sorted[0])
             if(i2i % 3000 == 0):
-                print(i2i)
+                print("loading...")
             maxF = wall
             for i in range(wall + 1, len(self.words)):
                 if(int(self.words[maxF].times_encountered) < int(self.words[i].times_encountered)):
@@ -1102,7 +1102,7 @@ def OpenDict(DictPath):
                 line = line[:-1]
             line = line.split('\t')
             if(len(line) < 2):
-                print(line[0])
+                #print(line[0])
                 DictData.amount_of_words = line[0]
                 continue
             #line[0] = line[0][0].upper() + line[0][1:]
@@ -1161,20 +1161,37 @@ currentDictPath = "users/1/DictToUse.txt"
 currentUserInfo = "users/1/log.txt"
 defaultDictPath = "Dictionaries/DictDefault.txt"
 #currentDictPath = "StatsToUse/BackUp/DictToUse-2019-10-9-10-18pm.txt"
-
+processed = False
 array1 = openLog(currentUserInfo)
 AIm = array1[0]
 BIm = array1[1]
 AIm = int(AIm)
 BIm = int(BIm)
-print(AIm, BIm)
+print("very important words:", AIm, "not that important but still:", BIm)
 
 currentHipperDict = OpenDict(currentDictPath)
+
+statsRes = currentHipperDict.CurrentKnowledge(1, 4, 10)
+#for i in statsRes:
+#    print(i)
+print()
+print("you know", statsRes[4][0], "words, which is", statsRes[4][1], "%")
+print("you are learning", statsRes[5][0], "words, which is", statsRes[5][1], "%")
+print("you have seen", statsRes[6][0], " more words, which is", statsRes[6][1], "%")
+print("you don't know", statsRes[7][0], "words, which is", statsRes[7][1], "%")
+print("all unimportant words are", statsRes[8][1], "%")
+
+print()
 #for i in currentHipperDict.words[:10]:
 #    print(i.OutputInfo())
 
 for i in range(1000):
+    if(not processed):
+        print('if you want to change the numbers or important words, type "/changeNumbers"')
+        print('if you want to upload subtitles, save the file "subtitles.srt" and type "/processSubtitles"')
+        print('if you want to upload text, save it "textFile.srt" and type "/processText"')
     line = input()
+    print()
     while(len(line) > 0 and (line[-1] == " " or line[-1] == "\n" or line[-1] == "\r")):
         line = line[:-1]
     if(line == "/openDict"):
@@ -1219,7 +1236,7 @@ for i in range(1000):
         for i in statsRes:
             print(i)
 
-    elif(line[:9] == "/ptClean/"):
+    elif(line == "/processSubtitles"):
         #textToP = ProcessText(line[4:], "NO")
         currentInFilePathSrt = currentInFilePathSrt
         CleanSRT(OpenText(currentInFilePathSrt), currentInFilePathSrt[:-4]+"Clean.srt")
@@ -1234,15 +1251,25 @@ for i in range(1000):
         #for i in currentFile.words[:10]:
         #    print(i.OutputInfo())
         statsRes = currentFile.CurrentKnowledge(1, 4, 10)
-        for i in statsRes:
-            print(i)
+        print("in these subtitles:")
+        print("you know", statsRes[4][0], "words, which is", statsRes[4][1], "%")
+        print("you are learning", statsRes[5][0], "words, which is", statsRes[5][1], "%")
+        print("you have seen", statsRes[6][0], "words, which is", statsRes[6][1], "%")
+        print("you don't know", statsRes[7][0], "words, which is", statsRes[7][1], "%")
+        print(statsRes[8][0], "words are not important, which is", statsRes[8][1], "%")
         coloredText = currentFile.ColorSTRWE(currentOutColoredFilePath, 1, 4, 10)
         SaveColoredSTR(currentOutColoredFilePath, coloredText)
 
         currentFile = OpenText(currentInFilePathSrt[:-4]+"Clean.srt")
         currentFile.ProcessTextWords()
         currentFile.AddDictInfo(currentHipperDict)
-    elif(line[:4] == "/pt/"):
+
+        processed = True
+        print()
+        print('saved in "subtitlesColored.srt", you can now open it!')
+        print('after watching please type "/saveProgress", so that I can save your progress!!!')
+        print()
+    elif(line == "/processText"):
         #textToP = ProcessText(line[4:], "NO")
         currentFile = OpenText(currentInFilePath)
         #for i in currentFile.words[:10]:
@@ -1255,8 +1282,13 @@ for i in range(1000):
         #for i in currentFile.words[:10]:
         #    print(i.OutputInfo())
         statsRes = currentFile.CurrentKnowledge(1, 4, 10)
-        for i in statsRes:
-            print(i)
+
+        print("in these text:")
+        print("you know", statsRes[4][0], "words, which is", statsRes[4][1], "%")
+        print("you are learning", statsRes[5][0], "words, which is", statsRes[5][1], "%")
+        print("you have seen", statsRes[6][0], "words, which is", statsRes[6][1], "%")
+        print("you don't know", statsRes[7][0], "words, which is", statsRes[7][1], "%")
+        print(statsRes[8][0], "words are not important, which is", statsRes[8][1], "%")
 
         coloredText = currentFile.ColorSTRWE(currentOutHTMLColoredFilePath, 1, 4, 10)
         SaveColoredHTML(currentOutHTMLColoredFilePath, coloredText)
@@ -1264,6 +1296,11 @@ for i in range(1000):
         currentFile = OpenText(currentInFilePath)
         currentFile.ProcessTextWords()
         currentFile.AddDictInfo(currentHipperDict)
+        processed = True
+        print()
+        print('saved in "Colored.html", you can now open it!')
+        print('after reading please type "/saveProgress", so that I can save your progress!!!')
+        print()
     #elif(line == "/addEncountered"):
     #    currentHipperDict.AddEncountered(currentFile)
     elif(line == "/clean"):
@@ -1310,8 +1347,12 @@ for i in range(1000):
 
     elif(line == "/zeroEncounters"):
         currentHipperDict.ZeroEncounters()
-    elif(line == "/addEncounteredIR"):
+    elif(line == "/saveProgress"):
         currentHipperDict.AddEncounteredIgnoringRare(currentFile)
+        currentHipperDict.saveDictionary(currentDictPath)
+        print("now you can close the app")
+        #for i in currentHipperDict.words[:10]:
+        #    print(i.OutputInfo())
 
     elif(line[:12] == "/outputDict/"):
         print("ok")
@@ -1341,9 +1382,10 @@ for i in range(1000):
         coloredText = currentFile.ColorSTRWEAKNS(currentOutColoredFilePath[:-4]+"WKNS.srt", 1, 4, 10)
         SaveColoredSTR(currentOutColoredFilePath[:-4]+"WKNS.srt", coloredText)
     else:
-        currentWord = MWord(line, False)
-        s = currentWord.analyze_word()
-        for i in s:
-            print(i)
-        print("settled:")
-        print(currentWord.OutputInfo())
+        print("unknown command")
+        #currentWord = MWord(line, False)
+        #s = currentWord.analyze_word()
+        #for i in s:
+        #    print(i)
+        #print("settled:")
+        #print(currentWord.OutputInfo())
